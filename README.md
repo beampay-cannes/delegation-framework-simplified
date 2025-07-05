@@ -1,6 +1,8 @@
-# Delegation Framework
+## Fork of Metamask Delegation Framework
 
-# For ETHGlobal Cannes we just forket it and simplified it to a single contract.
+# For ETHGlobal Cannes we just forked it and simplified it to use a single contract as a delegator.
+
+---------
 
 > [!WARNING]
 > We use tags for audited versions of code releases and the `main` branch is the working development branch. All PRs should be based against `main` branch.
