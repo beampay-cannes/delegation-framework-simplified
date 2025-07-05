@@ -1,5 +1,7 @@
 # Delegation Framework
 
+# For ETHGlobal Cannes we just forket it and simplified it to a single contract.
+
 > [!WARNING]
 > We use tags for audited versions of code releases and the `main` branch is the working development branch. All PRs should be based against `main` branch.
 
