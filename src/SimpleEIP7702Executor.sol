@@ -18,15 +18,10 @@ contract SimpleEIP7702Executor is ExecutionHelper {
     using ModeLib for ModeCode;
     using ExecutionLib for bytes;
 
-    ////////////////////////////// State //////////////////////////////
-
-    /// @custom:eip7702-upgrades-unsafe-allow state-variable-immutable
-    address private immutable __self = address(this);
-
     ////////////////////////////// Errors //////////////////////////////
 
-    /// @dev The call is from an unauthorized context.
-    error UnauthorizedCallContext();
+    /// @dev Error thrown when the caller is not this contract.
+    error NotSelf();
 
     /// @dev Error thrown when an execution with an unsupported CallType was made.
     error UnsupportedCallType(CallType callType);
@@ -37,11 +32,11 @@ contract SimpleEIP7702Executor is ExecutionHelper {
     ////////////////////////////// Modifiers //////////////////////////////
 
     /**
-     * @dev Prevents direct calls to the implementation.
-     * @dev Check that the execution is being performed through a delegatecall call (EIP7702).
+     * @notice Require the function call to come from this contract.
+     * @dev Check that the caller is the contract itself
      */
     modifier onlySelf() {
-        if (address(this) == __self) revert UnauthorizedCallContext();
+        if (msg.sender != address(this)) revert NotSelf();
         _;
     }
 
