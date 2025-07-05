@@ -18,7 +18,15 @@ contract SimpleEIP7702Executor is ExecutionHelper {
     using ModeLib for ModeCode;
     using ExecutionLib for bytes;
 
+    ////////////////////////////// State //////////////////////////////
+
+    /// @custom:eip7702-upgrades-unsafe-allow state-variable-immutable
+    address private immutable __self = address(this);
+
     ////////////////////////////// Errors //////////////////////////////
+
+    /// @dev The call is from an unauthorized context.
+    error UnauthorizedCallContext();
 
     /// @dev Error thrown when an execution with an unsupported CallType was made.
     error UnsupportedCallType(CallType callType);
@@ -26,13 +34,24 @@ contract SimpleEIP7702Executor is ExecutionHelper {
     /// @dev Error thrown when an execution with an unsupported ExecType was made.
     error UnsupportedExecType(ExecType execType);
 
+    ////////////////////////////// Modifiers //////////////////////////////
+
+    /**
+     * @dev Prevents direct calls to the implementation.
+     * @dev Check that the execution is being performed through a delegatecall call (EIP7702).
+     */
+    modifier onlySelf() {
+        if (address(this) == __self) revert UnauthorizedCallContext();
+        _;
+    }
+
     ////////////////////////////// External Methods //////////////////////////////
 
     /**
      * @notice Executes an Execution from this contract
      * @param _execution The Execution to be executed
      */
-    function execute(Execution calldata _execution) external payable {
+    function execute(Execution calldata _execution) external payable onlySelf {
         _execute(_execution.target, _execution.value, _execution.callData);
     }
 
@@ -41,7 +60,7 @@ contract SimpleEIP7702Executor is ExecutionHelper {
      * @param _mode The ModeCode for the execution
      * @param _executionCalldata The calldata for the execution
      */
-    function execute(ModeCode _mode, bytes calldata _executionCalldata) external payable {
+    function execute(ModeCode _mode, bytes calldata _executionCalldata) external payable onlySelf {
         (CallType callType_, ExecType execType_,,) = _mode.decode();
 
         // Check if calltype is batch or single
